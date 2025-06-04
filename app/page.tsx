@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Bot, Loader2, MessageCircle, Search, MoreVertical } from "lucide-react"
+import { Send, Bot, Loader2, MessageCircle } from "lucide-react"
 
 export default function SimpleChatGPT() {
   const [message, setMessage] = useState("")
@@ -84,45 +84,9 @@ export default function SimpleChatGPT() {
   }
 
   return (
-    <div className="h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        {/* Sidebar Header */}
-        <div className="bg-[#1e3a8a] text-white p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <MessageCircle className="w-5 h-5" />
-            </div>
-            <span className="font-medium">Simple Chat</span>
-          </div>
-          <div className="flex space-x-2">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <Search className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-              <MoreVertical className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Chat List */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-3 border-b border-gray-100 bg-[#1e3a8a]/5 hover:bg-[#1e3a8a]/10 cursor-pointer">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-[#1e3a8a] rounded-full flex items-center justify-center">
-                <Bot className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-medium text-gray-900">AI Assistant</h3>
-                <p className="text-sm text-gray-500 truncate">Ready to help you with anything</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="h-screen bg-gray-100">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="h-full flex flex-col">
         {/* Chat Header */}
         <div className="bg-[#1e3a8a] text-white p-4 flex items-center space-x-3 shadow-sm">
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
