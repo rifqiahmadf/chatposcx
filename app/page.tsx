@@ -148,7 +148,7 @@ export default function SimpleChatGPT() {
         </div>
 
         {/* Input Area */}
-        <div className="bg-white border-t border-gray-200 p-4">
+        <div className="bg-white border-t border-gray-200 p-4 rounded-tl-2xl rounded-tr-2xl">
           <div className="flex items-center space-x-3 max-w-3xl mx-auto">
             <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 flex items-center space-x-2">
               <Input
