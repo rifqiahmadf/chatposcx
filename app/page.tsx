@@ -88,22 +88,22 @@ export default function SimpleChatGPT() {
       {/* Main Chat Container with max width */}
       <div className="w-full max-w-4xl h-full flex flex-col border-x border-gray-200">
         {/* Chat Header */}
-        <div className="bg-[#1e3a8a] text-white p-4 flex items-center space-x-3 shadow-sm">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <Bot className="w-5 h-5" />
+        <div className="bg-white border border-gray-200 p-4 flex items-center space-x-3 shadow-sm">
+          <div className="w-10 h-10 border-2 border-[#1e3a8a] rounded-full flex items-center justify-center">
+            <Bot className="w-5 h-5 text-[#1e3a8a]" />
           </div>
           <div>
-            <h2 className="font-medium">AI Assistant</h2>
-            <p className="text-sm text-white/80">Online</p>
+            <h2 className="font-medium text-gray-900">AI Assistant</h2>
+            <p className="text-sm text-gray-500">Online</p>
           </div>
         </div>
 
         {/* Messages Area */}
         <div
-          className="flex-1 overflow-y-auto p-4 space-y-4"
+          className="flex-1 overflow-y-auto p-4 space-y-4 rounded-tl-3xl rounded-tr-3xl"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23e5e7eb' fillOpacity='0.3'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='10' r='1'/%3E%3Ccircle cx='10' cy='50' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundColor: "#f0f2f5",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23e5e7eb' strokeWidth='1' strokeOpacity='0.4'%3E%3Cpath d='M20,20 Q30,10 40,20 T60,20 T80,20' fill='none'/%3E%3Cpath d='M10,40 Q20,30 30,40 T50,40 T70,40 T90,40' fill='none'/%3E%3Cpath d='M15,60 Q25,50 35,60 T55,60 T75,60' fill='none'/%3E%3Cpath d='M5,80 Q15,70 25,80 T45,80 T65,80 T85,80' fill='none'/%3E%3Ccircle cx='25' cy='25' r='2' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Ccircle cx='75' cy='35' r='1.5' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Ccircle cx='45' cy='65' r='1' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Ccircle cx='85' cy='75' r='2' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Cpath d='M30,15 L35,10 L40,15 L35,20 Z' fill='%23e5e7eb' fillOpacity='0.2'/%3E%3Cpath d='M70,55 L75,50 L80,55 L75,60 Z' fill='%23e5e7eb' fillOpacity='0.2'/%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundColor: "#f8fafc",
           }}
         >
           {messages.length === 0 && (
