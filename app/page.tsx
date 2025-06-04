@@ -84,9 +84,9 @@ export default function SimpleChatGPT() {
   }
 
   return (
-    <div className="h-screen bg-gray-100">
-      {/* Main Chat Area */}
-      <div className="h-full flex flex-col">
+    <div className="h-screen bg-gray-100 flex justify-center">
+      {/* Main Chat Container with max width */}
+      <div className="w-full max-w-4xl h-full flex flex-col border-x border-gray-200">
         {/* Chat Header */}
         <div className="bg-[#1e3a8a] text-white p-4 flex items-center space-x-3 shadow-sm">
           <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -119,7 +119,7 @@ export default function SimpleChatGPT() {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                className={`max-w-xs lg:max-w-lg px-4 py-2 rounded-lg ${
                   msg.sender === "user"
                     ? "bg-[#1e3a8a] text-white rounded-br-none"
                     : "bg-white text-gray-900 rounded-bl-none shadow-sm"
@@ -147,7 +147,7 @@ export default function SimpleChatGPT() {
 
         {/* Input Area */}
         <div className="bg-white border-t border-gray-200 p-4">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 max-w-3xl mx-auto">
             <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 flex items-center space-x-2">
               <Input
                 value={message}
