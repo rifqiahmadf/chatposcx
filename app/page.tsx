@@ -100,10 +100,9 @@ export default function SimpleChatGPT() {
 
         {/* Messages Area */}
         <div
-          className="flex-1 overflow-y-auto p-4 space-y-4 rounded-tl-3xl rounded-tr-3xl"
+          className="flex-1 overflow-y-auto p-4 space-y-4" // Removed rounded-tl-3xl rounded-tr-3xl
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23e5e7eb' strokeWidth='1' strokeOpacity='0.4'%3E%3Cpath d='M20,20 Q30,10 40,20 T60,20 T80,20' fill='none'/%3E%3Cpath d='M10,40 Q20,30 30,40 T50,40 T70,40 T90,40' fill='none'/%3E%3Cpath d='M15,60 Q25,50 35,60 T55,60 T75,60' fill='none'/%3E%3Cpath d='M5,80 Q15,70 25,80 T45,80 T65,80 T85,80' fill='none'/%3E%3Ccircle cx='25' cy='25' r='2' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Ccircle cx='75' cy='35' r='1.5' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Ccircle cx='45' cy='65' r='1' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Ccircle cx='85' cy='75' r='2' fill='%23e5e7eb' fillOpacity='0.3'/%3E%3Cpath d='M30,15 L35,10 L40,15 L35,20 Z' fill='%23e5e7eb' fillOpacity='0.2'/%3E%3Cpath d='M70,55 L75,50 L80,55 L75,60 Z' fill='%23e5e7eb' fillOpacity='0.2'/%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundColor: "#f8fafc",
+            backgroundColor: "#f8fafc", // Removed doodle background
           }}
         >
           {messages.length === 0 && (
@@ -119,10 +118,11 @@ export default function SimpleChatGPT() {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-xs lg:max-w-lg px-4 py-2 rounded-2xl ${
+                className={`max-w-xs lg:max-w-lg px-4 py-2 rounded-2xl border ${
+                  // Added border
                   msg.sender === "user"
-                    ? "bg-[#1e3a8a] text-white rounded-br-none"
-                    : "bg-white text-gray-900 rounded-bl-none shadow-sm"
+                    ? "bg-[#1e3a8a] text-white border-[#1e3a8a] rounded-br-none" // Border for user messages
+                    : "bg-white text-gray-900 border-gray-200 rounded-bl-none shadow-sm" // Border for bot messages
                 }`}
               >
                 <p className="whitespace-pre-wrap">{msg.text}</p>
@@ -135,7 +135,9 @@ export default function SimpleChatGPT() {
 
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-white text-gray-900 rounded-lg rounded-bl-none shadow-sm px-4 py-2">
+              <div className="bg-white text-gray-900 rounded-lg rounded-bl-none shadow-sm px-4 py-2 border border-gray-200">
+                {" "}
+                {/* Added border */}
                 <div className="flex items-center space-x-2">
                   <Loader2 className="w-4 h-4 animate-spin text-[#1e3a8a]" />
                   <span className="text-gray-500">AI is typing...</span>
