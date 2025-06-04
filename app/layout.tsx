@@ -6,8 +6,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Simple Chat - No History",
-  description: "A simple ChatGPT-like interface without chat log functionality",
+  title: "Simple Chat - WhatsApp Style",
+  description: "A WhatsApp Web-inspired chat interface with AI assistant",
     generator: 'v0.dev'
 }
 
