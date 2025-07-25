@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, Bot, User, Loader2 } from "lucide-react"
+import { ElasticsearchLogger, getDefaultElasticsearchConfig, type ChatMessage } from "@/lib/elasticsearch"
 
 export default function ChatGPTStyleLayout() {
   const [message, setMessage] = useState("")
@@ -13,6 +14,18 @@ export default function ChatGPTStyleLayout() {
   const [chatHistory, setChatHistory] = useState<{ role: "user" | "bot"; text: string }[]>([])
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+  
+  // Initialize Elasticsearch logger
+  const elasticsearchLogger = useRef<ElasticsearchLogger | null>(null)
+  
+  useEffect(() => {
+    try {
+      elasticsearchLogger.current = new ElasticsearchLogger(getDefaultElasticsearchConfig())
+      console.log('Elasticsearch logger initialized')
+    } catch (error) {
+      console.error('Failed to initialize Elasticsearch logger:', error)
+    }
+  }, [])
 
   const generateId = (prefix: string) => `${prefix}${Math.floor(Math.random() * 1000000)}`
 
@@ -50,6 +63,16 @@ export default function ChatGPTStyleLayout() {
     const currentMessage = message // simpan dulu isinya
     setMessage("") // kosongkan langsung input field
     setIsLoading(true)
+    
+    // Create user message object for logging
+    const userMessage: ChatMessage = {
+      role: "user",
+      text: currentMessage,
+      timestamp: new Date().toISOString(),
+      userId,
+      sessionId
+    }
+    
     setChatHistory((prev) => [...prev, { role: "user", text: currentMessage }])
 
     try {
@@ -87,18 +110,54 @@ export default function ChatGPTStyleLayout() {
         })
       })
       setMessage("")
-      // Tampilkan satu per satu dengan delay
-      // for (let i = 0; i < allParts.length; i++) {
-      //   await sleep(400) // delay 400ms antar bubble
-      //   setChatHistory((prev) => [...prev, { role: "bot", text: allParts[i] }])
-      // }
-      setChatHistory((prev) => [...prev, { role: "bot", text: allParts[allParts.length - 1] }])
+      
+      const botResponseText = allParts[allParts.length - 1] || "No response available"
+      
+      // Create bot response object for logging
+      const botResponse: ChatMessage = {
+        role: "bot",
+        text: botResponseText,
+        timestamp: new Date().toISOString(),
+        userId,
+        sessionId
+      }
+      
+      // Update chat history
+      setChatHistory((prev) => [...prev, { role: "bot", text: botResponseText }])
+      
+      // Send chat data to Elasticsearch after retrieving API response
+      if (elasticsearchLogger.current) {
+        try {
+          await elasticsearchLogger.current.logChatExchange(userMessage, botResponse)
+          console.log('Chat exchange logged to Elasticsearch successfully')
+        } catch (error) {
+          console.error('Failed to log chat exchange to Elasticsearch:', error)
+        }
+      }
+      
     } catch (error) {
       console.error("Error:", error)
+      const errorResponse: ChatMessage = {
+        role: "bot",
+        text: "Sorry, there was an error processing your request.",
+        timestamp: new Date().toISOString(),
+        userId,
+        sessionId
+      }
+      
       setChatHistory((prev) => [
         ...prev,
         { role: "bot", text: "Sorry, there was an error processing your request." },
       ])
+      
+      // Log error response to Elasticsearch as well
+      if (elasticsearchLogger.current) {
+        try {
+          await elasticsearchLogger.current.logChatExchange(userMessage, errorResponse)
+        } catch (logError) {
+          console.error('Failed to log error to Elasticsearch:', logError)
+        }
+      }
     } finally {
       setIsLoading(false)
     }
