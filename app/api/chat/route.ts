@@ -61,7 +61,7 @@ function generateId(): string {
   return Math.random().toString(36).substr(2, 8)
 }
 
-export async function POST(request: NextRequest) {
+async function handlePost(request: NextRequest) {
   try {
     const body = await request.json()
 
@@ -82,3 +82,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
+// Export the handler without Elasticsearch logging (only /api/run should be logged)
+export const POST = handlePost

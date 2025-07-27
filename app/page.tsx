@@ -1,66 +1,71 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Send, User, Loader2 } from "lucide-react"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import rehypeRaw from "rehype-raw"
+import React, { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Send, User, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 export default function ChatGPTStyleLayout() {
-  const [message, setMessage] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [userId, setUserId] = useState("")
-  const [sessionId, setSessionId] = useState("")
-  const [chatHistory, setChatHistory] = useState<{ role: "user" | "bot"; text: string }[]>([])
-  const chatContainerRef = useRef<HTMLDivElement>(null)
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [chatHistory, setChatHistory] = useState<
+    { role: "user" | "bot"; text: string }[]
+  >([]);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
-  const generateId = (prefix: string) => `${prefix}${Math.floor(Math.random() * 1000000)}`
+  const generateId = (prefix: string) =>
+    `${prefix}${Math.floor(Math.random() * 1000000)}`;
 
   const handleRefreshSession = async () => {
-    const newUserId = generateId("u")
-    const newSessionId = generateId("s")
+    const newUserId = generateId("u");
+    const newSessionId = generateId("s");
     try {
       const res = await fetch(`/api/proxy/${newUserId}/${newSessionId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
-      })
-      if (!res.ok) throw new Error("Failed to create session")
-      const data = await res.json()
-      setUserId(data.userId)
-      setSessionId(data.id)
-      setChatHistory([])
+      });
+      if (!res.ok) throw new Error("Failed to create session");
+      const data = await res.json();
+      setUserId(data.userId);
+      setSessionId(data.id);
+      setChatHistory([]);
     } catch (error) {
-      console.error("Error creating session:", error)
+      console.error("Error creating session:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    handleRefreshSession()
-  }, [])
+    handleRefreshSession();
+  }, []);
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
-  }, [chatHistory])
+  }, [chatHistory]);
 
   const handleSend = async () => {
-    if (!message.trim()) return
-    const currentMessage = message // simpan dulu isinya
-    setMessage("") // kosongkan langsung input field
-    setIsLoading(true)
-    setChatHistory((prev) => [...prev, { role: "user", text: currentMessage }])
+    if (!message.trim()) return;
+    const currentMessage = message; // simpan dulu isinya
+    setMessage(""); // kosongkan langsung input field
+    setIsLoading(true);
+    setChatHistory((prev) => [...prev, { role: "user", text: currentMessage }]);
 
     try {
       const res = await fetch(`/api/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          appName: "multi_tool_agent",
+          appName: "master_ips_agent",
           user_id: userId,
           session_id: sessionId,
           newMessage: {
@@ -68,53 +73,56 @@ export default function ChatGPTStyleLayout() {
             parts: [{ text: currentMessage }],
           },
         }),
-      })
+      });
 
-      if (!res.ok) throw new Error("Failed to get response")
-      const data = await res.json()
-      console.log("response", data)
+      if (!res.ok) throw new Error("Failed to get response");
+      const data = await res.json();
+      console.log("response", data);
 
       const modelResponses = data.filter(
         (event: any) =>
-          event.content?.role === "model" &&
-          Array.isArray(event.content.parts)
-      )
+          event.content?.role === "model" && Array.isArray(event.content.parts)
+      );
 
       // Ambil semua teks dari parts
-      const allParts: string[] = []
+      const allParts: string[] = [];
       modelResponses.forEach((event: any) => {
         event.content.parts.forEach((part: any) => {
           if (typeof part.text === "string" && part.text.trim() !== "") {
-            allParts.push(part.text.trim())
+            allParts.push(part.text.trim());
           }
-        })
-      })
+        });
+      });
       // setMessage("")
       // Tampilkan satu per satu dengan delay
       // for (let i = 0; i < allParts.length; i++) {
       //   await sleep(400) // delay 400ms antar bubble
       //   setChatHistory((prev) => [...prev, { role: "bot", text: allParts[i] }])
       // }
-      setChatHistory((prev) => [...prev, { role: "bot", text: allParts[allParts.length - 1] }])
-    } catch (error) {
-      console.error("Error:", error)
       setChatHistory((prev) => [
         ...prev,
-        { role: "bot", text: "Sorry, there was an error processing your request." },
-      ])
+        { role: "bot", text: allParts[allParts.length - 1] },
+      ]);
+    } catch (error) {
+      console.error("Error:", error);
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: "Sorry, there was an error processing your request.",
+        },
+      ]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+      e.preventDefault();
+      handleSend();
     }
-  }
-
+  };
 
   return (
     <div className="flex flex-col h-screen w-full">
@@ -130,12 +138,16 @@ export default function ChatGPTStyleLayout() {
           </div>
 
           {/* Tengah: Judul */}
-          <h1 className="text-lg font-semibold text-gray-900">Demo Chat Agent</h1>
+          <h1 className="text-lg font-semibold text-gray-900">
+            Demo Chat Agent
+          </h1>
 
           {/* Kanan: Refresh */}
           <Button
             variant="outline"
-            onClick={() => { window.location.reload() }}
+            onClick={() => {
+              window.location.reload();
+            }}
             className="text-sm border-gray-300 hover:bg-gray-100"
           >
             🔄 Refresh
@@ -143,28 +155,42 @@ export default function ChatGPTStyleLayout() {
         </div>
       </header>
 
-      <main ref={chatContainerRef} className="relative flex-1 overflow-y-auto bg-transparent pb-24">
+      <main
+        ref={chatContainerRef}
+        className="relative flex-1 overflow-y-auto bg-transparent pb-24"
+      >
         {/* Static Background Pattern */}
-        <div className="fixed inset-0 z-0 bg-[url('/assets/bg-pattern.jpg')] bg-repeat  pointer-events-none" style={{ opacity: 0.4 }} />
+        <div
+          className="fixed inset-0 z-0 bg-[url('/assets/bg-pattern.jpg')] bg-repeat  pointer-events-none"
+          style={{ opacity: 0.4 }}
+        />
 
         {/* Chat Content */}
         <div className="relative z-10 max-w-3xl mx-auto px-4 py-6 space-y-6">
           {chatHistory.map((msg, idx) => (
             <div
               key={idx}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`prose-sm whitespace-pre-wrap px-4 py-3 rounded-2xl border border-gray-200 shadow-xl max-w-[80%]
-            ${msg.role === "user"
-                    ? "bg-[#1B2C5A] text-white rounded-br-none"
-                    : "bg-white text-gray-800 rounded-bl-none"}`}
+            ${
+              msg.role === "user"
+                ? "bg-[#1B2C5A] text-white rounded-br-none"
+                : "bg-white text-gray-800 rounded-bl-none"
+            }`}
               >
                 <div className="flex items-center mb-1 text-xs opacity-60">
                   {msg.role === "user" ? (
                     <User className="w-4 h-4 mr-1" />
                   ) : (
-                    <img src="/assets/logo_posind.png" alt="Bot" className="w-4 h-4 mr-1" />
+                    <img
+                      src="/assets/logo_posind.png"
+                      alt="Bot"
+                      className="w-4 h-4 mr-1"
+                    />
                   )}
                   <span>{msg.role === "user" ? "You" : "Dara"}</span>
                 </div>
@@ -172,8 +198,8 @@ export default function ChatGPTStyleLayout() {
                   msg.text
                 ) : (
                   <div className="markdown-content">
-                    <ReactMarkdown 
-                      remarkPlugins={[remarkGfm]} 
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
                       rehypePlugins={[rehypeRaw]}
                     >
                       {msg.text}
@@ -217,5 +243,5 @@ export default function ChatGPTStyleLayout() {
         </div>
       </div>
     </div>
-  )
+  );
 }
