@@ -3,7 +3,10 @@
 import React, { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Bot, User, Loader2 } from "lucide-react"
+import { Send, User, Loader2 } from "lucide-react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
 
 export default function ChatGPTStyleLayout() {
   const [message, setMessage] = useState("")
@@ -58,8 +61,8 @@ export default function ChatGPTStyleLayout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           appName: "multi_tool_agent",
-          userId,
-          sessionId,
+          user_id: userId,
+          session_id: sessionId,
           newMessage: {
             role: "user",
             parts: [{ text: currentMessage }],
@@ -86,7 +89,7 @@ export default function ChatGPTStyleLayout() {
           }
         })
       })
-      setMessage("")
+      // setMessage("")
       // Tampilkan satu per satu dengan delay
       // for (let i = 0; i < allParts.length; i++) {
       //   await sleep(400) // delay 400ms antar bubble
@@ -152,7 +155,7 @@ export default function ChatGPTStyleLayout() {
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`prose-sm whitespace-pre-wrap px-4 py-3 rounded-2xl shadow max-w-[80%]
+                className={`prose-sm whitespace-pre-wrap px-4 py-3 rounded-2xl border border-gray-200 shadow-xl max-w-[80%]
             ${msg.role === "user"
                     ? "bg-[#1B2C5A] text-white rounded-br-none"
                     : "bg-white text-gray-800 rounded-bl-none"}`}
@@ -165,14 +168,25 @@ export default function ChatGPTStyleLayout() {
                   )}
                   <span>{msg.role === "user" ? "You" : "Dara"}</span>
                 </div>
-                {msg.text}
+                {msg.role === "user" ? (
+                  msg.text
+                ) : (
+                  <div className="markdown-content">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]} 
+                      rehypePlugins={[rehypeRaw]}
+                    >
+                      {msg.text}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           ))}
 
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-white px-4 py-3 rounded-2xl shadow text-sm text-gray-700 flex items-center">
+              <div className="bg-white px-4 py-3 rounded-2xl shadow text-sm text-gray-700 border border-gray-200 shadow-xl flex items-center">
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 Thinking...
               </div>
@@ -202,8 +216,6 @@ export default function ChatGPTStyleLayout() {
           </Button>
         </div>
       </div>
-
-
     </div>
   )
 }
