@@ -26,20 +26,10 @@ export default function ChatGPTStyleLayout() {
   const handleRefreshSession = async () => {
     const newUserId = generateId("u");
     const newSessionId = generateId("s");
-    try {
-      const res = await fetch(`/api/proxy/${newUserId}/${newSessionId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      if (!res.ok) throw new Error("Failed to create session");
-      const data = await res.json();
-      setUserId(data.userId);
-      setSessionId(data.id);
-      setChatHistory([]);
-    } catch (error) {
-      console.error("Error creating session:", error);
-    }
+    // For demo purposes, just set the IDs directly without external API call
+    setUserId(newUserId);
+    setSessionId(newSessionId);
+    setChatHistory([]);
   };
 
   useEffect(() => {

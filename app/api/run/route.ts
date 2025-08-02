@@ -11,40 +11,33 @@ export async function POST(request: NextRequest) {
         // Parse the request body
         requestData = await request.json()
 
-        // Forward the request to the actual service
-        const response = await fetch('http://10.24.1.43:5001/run', {
+        // For demo purposes, use the local chat API instead of external service
+        const chatResponse = await fetch('http://localhost:3006/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Forward other relevant headers if needed
-                ...(request.headers.get('authorization') && {
-                    'authorization': request.headers.get('authorization')!
-                })
             },
-            body: JSON.stringify(requestData)
+            body: JSON.stringify({
+                appName: requestData.appName || 'demo_agent',
+                userId: requestData.user_id || 'demo_user',
+                sessionId: requestData.session_id || 'demo_session',
+                newMessage: requestData.newMessage
+            })
         })
 
-        statusCode = response.status
+        statusCode = chatResponse.status
 
         // Parse the response
-        const responseText = await response.text()
-
-        try {
-            responseData = JSON.parse(responseText)
-        } catch {
-            responseData = { body: responseText }
-        }
+        const chatData = await chatResponse.json()
+        
+        // Transform the response to match expected format
+        responseData = chatData.events || [chatData]
 
         // Log to Elasticsearch
         await logApiResponse(request, requestData, responseData, statusCode, startTime)
 
         // Return the response to the client
-        return new NextResponse(responseText, {
-            status: statusCode,
-            headers: {
-                'Content-Type': response.headers.get('Content-Type') || 'application/json'
-            }
-        })
+        return NextResponse.json(responseData, { status: statusCode })
 
     } catch (error) {
         console.error('Error in /api/run proxy:', error)
