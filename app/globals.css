@@ -100,7 +100,20 @@ body {
 }
 
 .markdown-content p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content p + h1,
+.markdown-content p + h2,
+.markdown-content p + h3,
+.markdown-content p + h4,
+.markdown-content p + h5,
+.markdown-content p + h6,
+.markdown-content p + ul,
+.markdown-content p + ol,
+.markdown-content p + blockquote,
+.markdown-content p + pre {
+  margin-top: 0.75rem;
 }
 
 .markdown-content h1, 

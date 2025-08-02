@@ -54,6 +54,25 @@ function generateMockResponse(userMessage: string): string {
     return `The current time is ${new Date().toLocaleTimeString()}. You asked: "${userMessage}".`
   }
 
+  // If asking for markdown formatting, return a markdown response to test the fix
+  if (userMessage.toLowerCase().includes("markdown") || userMessage.toLowerCase().includes("paragraph")) {
+    return `# Markdown Response Test
+
+This is the **first paragraph** with some bold text. It should have minimal spacing after it.
+
+This is the second paragraph with *italic text*. The spacing between paragraphs should be reduced now.
+
+Here's a third paragraph with some \`inline code\` to test the fix.
+
+## A Subtitle
+
+- This is a bulleted list
+- With multiple items
+- To test spacing
+
+And here's a final paragraph after the list to verify the markdown rendering fix is working properly.`
+  }
+
   return responses[Math.floor(Math.random() * responses.length)]
 }
 
