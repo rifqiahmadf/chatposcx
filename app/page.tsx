@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Send, User, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
 
 export default function ChatGPTStyleLayout() {
@@ -199,7 +200,7 @@ export default function ChatGPTStyleLayout() {
                 ) : (
                   <div className="markdown-content">
                     <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
+                      remarkPlugins={[remarkGfm, remarkBreaks]}
                       rehypePlugins={[rehypeRaw]}
                     >
                       {msg.text}

@@ -54,6 +54,25 @@ function generateMockResponse(userMessage: string): string {
     return `The current time is ${new Date().toLocaleTimeString()}. You asked: "${userMessage}".`
   }
 
+  if (userMessage.toLowerCase().includes("list") || userMessage.toLowerCase().includes("items")) {
+    return `Here's a list of items you requested:
+
+- First item with some description
+- Second item that has multiple words
+- Third item which is longer
+
+This text demonstrates the newline issue:
+First line
+Second line
+Third line
+
+Paragraph break:
+
+This is a new paragraph.
+
+Some **bold text** and *italic text* for testing.`
+  }
+
   return responses[Math.floor(Math.random() * responses.length)]
 }
 
@@ -65,10 +84,10 @@ async function handlePost(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validate request structure based on ADK documentation
-    if (!body.appName || !body.userId || !body.sessionId || !body.newMessage) {
+    // Validate request structure - make it more lenient for testing
+    if (!body.newMessage) {
       return NextResponse.json(
-        { error: "Missing required fields: appName, userId, sessionId, newMessage" },
+        { error: "Missing required field: newMessage" },
         { status: 400 },
       )
     }
